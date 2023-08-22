@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
+import React from 'react';
 import axios from 'axios';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import { Button, Grid } from "@mui/material";
-import {
-  Chart as ChartJS, CategoryScale
-} from 'chart.js/auto';
-import { Line } from 'react-chartjs-2';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 const Converter = () => {
   const [symbols, setSymbols] = useState([]);
@@ -14,6 +12,17 @@ const Converter = () => {
   const [fromCurrency, setFromCurrency] = useState('');
   const [toCurrency, setToCurrency] = useState('');
   const [history, setHistory] = useState([]);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
+  useEffect(() => {
+    const currentDate = new Date();
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(currentDate.getDate() - 7);
+
+    setStartDate(sevenDaysAgo.toISOString().split('T')[0]);
+    setEndDate(currentDate.toISOString().split('T')[0]);
+  }, []);
 
   useEffect(() => {
     async function load() {
@@ -22,15 +31,21 @@ const Converter = () => {
           .then(response => setRate(response.data.rates[toCurrency]))
           .catch(err => console.log(err));
 
-        await axios.get(`https://api.exchangerate.host/timeseries?start_date=2023-08-14&end_date=2023-08-21&base=${fromCurrency}&symbols=${toCurrency}&amount=${amount}`)
-          .then((response) => setHistory(response.data.rates))
+        await axios.get(`https://api.exchangerate.host/timeseries?start_date=${startDate}&end_date=${endDate}&base=${fromCurrency}&symbols=${toCurrency}&amount=${amount}`)
+          .then((response) => {
+            const historicalData = response.data.rates;
+            const formattedHistory = Object.keys(historicalData).map(date => ({
+              date,
+              [toCurrency]: historicalData[date][toCurrency]
+            }));
+            setHistory(formattedHistory);
+          })
           .catch(error => console.error(error));
-        ChartJS.register(CategoryScale)
       }
     }
 
-    load()
-  }, [fromCurrency, toCurrency, amount]);
+    load();
+  }, [fromCurrency, toCurrency, amount, startDate, endDate]);
 
   useEffect(() => {
     axios.get("https://api.exchangerate.host/symbols")
@@ -82,25 +97,14 @@ const Converter = () => {
       </div>
       <div>
         <h2>Exchange Rate History</h2>
-        <canvas id="currencyChart" width="400" height="200"></canvas>
-        <Line
-          datasetIdKey='currencyChart'
-          data={{
-            labels: ['Jun', 'Jul', 'Aug'],
-            datasets: [
-              {
-                id: 1,
-                label: 'Jun',
-                data: [5, 6, 7],
-              },
-              {
-                id: 2,
-                label: 'Jul',
-                data: [3, 2, 1],
-              },
-            ],
-          }}
-        />
+        <LineChart width={500} height={250} data={history}>
+          <CartesianGrid strokeDasharray="3" />
+          <XAxis dataKey="date" />
+          <YAxis />3
+          <Tooltip />
+          <Legend />
+          <Line type="monotone" dataKey={toCurrency} stroke="#8884d8" />
+        </LineChart>
       </div>
     </div>
   );
