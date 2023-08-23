@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react';
-import React from 'react';
-import axios from 'axios';
+import  './Converter.css';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import { Button, Grid } from "@mui/material";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import TextField from '@mui/material/TextField';
+import axios from 'axios';
+import {Space} from 'antd';
+
+
+
 
 const Converter = () => {
   const [symbols, setSymbols] = useState([]);
@@ -14,6 +19,9 @@ const Converter = () => {
   const [history, setHistory] = useState([]);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+
+
+  
 
   useEffect(() => {
     const currentDate = new Date();
@@ -52,6 +60,8 @@ const Converter = () => {
       .then(response => setSymbols(response.data.symbols))
       .catch(error => console.error(error));
   }, []);
+  
+
 
   const handleSwitch = () => {
     setFromCurrency(toCurrency);
@@ -59,17 +69,21 @@ const Converter = () => {
   };
 
   return (
-    <div>
-      <select onChange={(e) => setFromCurrency(e.target.value)} value={fromCurrency}>
-        <option value="">Select source currency</option>
+    <div  >
+      <h1> CURRENCY CONVERTER </h1>
+   <div >
+      <select 
+        id="demo-simple-select-helper"
+      onChange={(e) => setFromCurrency(e.target.value)} value={fromCurrency}>
+        <option value=""> Select source currency</option>
         {Object.keys(symbols).map(symbol => (
           <option value={symbol} key={symbol}>
             {symbols[symbol].description} ({symbol})
           </option>
         ))}
       </select>
-      <input type='number' value={amount || ''} onChange={(e) => setAmount(e.target.value)} />
-      <select onChange={(e) => setToCurrency(e.target.value)} value={toCurrency}>
+   
+      <select  onChange={(e) => setToCurrency(e.target.value)} value={toCurrency}>
         <option value="">Select target currency</option>
         {Object.keys(symbols).map(symbol => (
           <option value={symbol} key={symbol}>
@@ -77,17 +91,16 @@ const Converter = () => {
           </option>
         ))}
       </select>
-      <div>
-        <input type='number' readOnly value={rate || ''} />
-        {rate !== null && (
-          <p>
-            Converted amount: {rate} {toCurrency}
-          </p>
-        )}
       </div>
+     <Space/>
+      <div>
+      <TextField 
+      id="filled-number"
+      variant="filled"
+      type='number' value={amount || ''} onChange={(e) => setAmount(e.target.value)} /> </div>
       <div>
         <Grid item xs={13} md="auto">
-          <Button onClick={handleSwitch} sx={{
+        <Button onClick={handleSwitch} sx={{
             borderRadius: 1,
             height: "50%"
           }}>
@@ -96,16 +109,39 @@ const Converter = () => {
         </Grid>
       </div>
       <div>
-        <h2>Exchange Rate History</h2>
-        <LineChart width={500} height={250} data={history}>
-          <CartesianGrid strokeDasharray="3" />
-          <XAxis dataKey="date" />
-          <YAxis />3
-          <Tooltip />
-          <Legend />
-          <Line type="monotone" dataKey={toCurrency} stroke="#8884d8" />
-        </LineChart>
+
+      <TextField 
+      id="filled-number"
+      variant="filled" type='number' readOnly value={rate || ''} />
+        {rate !== null && (
+          <p className='p'>
+            Converted amount: {rate} {toCurrency}
+          </p>
+        )}
       </div>
+      <div>
+        <h2>Exchange Rate History</h2>
+       
+        {toCurrency ? (
+          <LineChart data={history} width={500} height={250}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" />
+            <YAxis domain={['dataMin', 'dataMax']} />
+            <Tooltip />
+            <Legend />
+            <Line type="monotone" dataKey={toCurrency} stroke="#8884d8" />
+          </LineChart>
+        ) : (
+          <LineChart width={500} height={250}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis domain={['date','date']}/>
+            <YAxis domain={[0, 5]} />
+            <Tooltip />
+            <Legend />
+          </LineChart>
+        )}
+      </div>
+    
     </div>
   );
 }

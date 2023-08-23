@@ -1,0 +1,75 @@
+* {
+    margin: 0;
+    font-family: 'Nunito', sans-serif;
+}
+
+.app-container {
+    background: linear-gradient(#9198e5, #edd8d6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.box {
+
+    background-color: rgba(156, 101, 184, 0.8);
+    box-sizing: border-box;
+    width: 230px;
+    height: auto;
+    float: left;
+    transition: .5s linear;
+    position: relative;
+    overflow: hidden;
+    margin-top: 70px;
+    width: 100%;
+    background-color: #7c09ba;
+    color: #540f6d;
+    padding: 15px 0;
+    font-size: 18px;
+    border-radius: 5px;
+    text-align: center;
+    margin: 4 px;
+    background: transparent;
+    text-transform: uppercase;
+    font-weight: 550;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(43, 5, 62, 0.5);
+}
+
+.p {
+    color: black;
+}
+
+select,
+textarea {
+    appearance: none;
+    padding: 4px 6px;
+    border: 0;
+    outline: 1;
+    font: inherit;
+    width: 16em;
+    height: 3em;
+    padding: 1 1em 0 0em;
+    border-radius: 0.25em;
+    box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    border: ridge;
+    border-color: #bcadc2;
+
+
+    option {
+        color: inherit;
+    }
+
+    &:focus {
+        outline: none;
+    }
+
+    &::-ms-expand {
+        display: none;
+    }
+}
